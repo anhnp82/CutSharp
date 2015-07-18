@@ -5,10 +5,12 @@ project(ShapeSharpening)
 # Handle Qt stuff
 #################
 # CMAKE_PREFIX_PATH must be set to the Qt5 installation
-set(CMAKE_PREFIX_PATH "C:/Qt/5.4/mingw491_32" CACHE PATH "The path to the Qt5 installation directory")
+set(CMAKE_PREFIX_PATH "C:/Qt5/5.5/msvc2013_64/" CACHE PATH "The path to the Qt5 installation directory")
+set(CMAKE_INSTALL_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ShapeSharpening)
 
 # Widgets finds its own dependencies (QtGui and QtCore).
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5OpenGL REQUIRED)
  
 # Tell CMake to run moc when necessary:
 set(CMAKE_AUTOMOC ON)
@@ -18,10 +20,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # Qt MOC file generation
 ########################
-set(QT_MOC_GENERATION_FILES
-	"${CMAKE_CURRENT_SOURCE_DIR}/app/scene.h"
-)
-QT5_WRAP_CPP(MOC_CPPS ${QT_MOC_GENERATION_FILES})
+#set(QT_MOC_GENERATION_FILES
+#	"${CMAKE_CURRENT_SOURCE_DIR}/app/scene.h"
+#)
+#QT5_WRAP_CPP(MOC_CPPS ${QT_MOC_GENERATION_FILES})
 
 file(GLOB ALL_GUI "${CMAKE_CURRENT_SOURCE_DIR}/res/*.ui")
 QT5_WRAP_UI(UI_CPPS ${ALL_GUI})
@@ -29,9 +31,12 @@ QT5_WRAP_UI(UI_CPPS ${ALL_GUI})
 file(GLOB ALL_RES "${CMAKE_CURRENT_SOURCE_DIR}/res/*.qrc")
 QT5_ADD_RESOURCES(RES_CPPS ${ALL_RES})
 
-set(ALL_QT_GENERATED_CODE ${MOC_CPPS} ${UI_CPPS} ${RES_CPPS})
+#set(ALL_QT_GENERATED_CODE ${MOC_CPPS} ${UI_CPPS} ${RES_CPPS})
+set(ALL_QT_GENERATED_CODE ${UI_CPPS} ${RES_CPPS})
 
+message(status "** Qt binary directory: ${_qt5Core_install_prefix}")
 
+find_package(OpenGL)
 
 #enable OpenMP
 ##############
@@ -138,9 +143,9 @@ ENDIF()
 
 add_executable(ShapeSharpening ${ALL_SRC} ${ALL_QT_GENERATED_CODE})
 
-qt5_use_modules(ShapeSharpening Widgets)
+qt5_use_modules(ShapeSharpening Widgets OpenGL)
 
-set(ALL_LIBRARIES ${Boost_LIBRARIES})
+set(ALL_LIBRARIES ${Boost_LIBRARIES} ${OPENGL_LIBRARIES})
 
 target_link_libraries(ShapeSharpening ${ALL_LIBRARIES})
 
@@ -148,7 +153,25 @@ target_link_libraries(ShapeSharpening ${ALL_LIBRARIES})
 ##############
 install(TARGETS ShapeSharpening DESTINATION bin)
 
-
+install(FILES ${ALL_HTMLS} DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/d3dcompiler_47.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/libEGL.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/libEGLd.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/libGLESv2.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/libGLESv2d.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/opengl32sw.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5Core.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5Cored.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5Gui.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5Guid.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5OpenGL.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5OpenGLd.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5Widgets.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt5Widgetsd.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt53DCore.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt53DCored.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt53DRenderer.dll" DESTINATION bin)
+install(FILES "${_qt5Core_install_prefix}/bin/Qt53DRendererd.dll" DESTINATION bin)
 
 ADD_CUSTOM_TARGET(run)
 ADD_CUSTOM_COMMAND(TARGET run POST_BUILD COMMAND ShapeSharpening.exe WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../install/bin/)

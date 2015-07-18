@@ -36,7 +36,7 @@
 #include <QtGui/qmatrix4x4.h>
 #include <QtGui/qvector3d.h>
 
-#include "3rdparty/fbm.h"
+//#include "3rdparty/fbm.h"
 
 void checkGLErrors(const QString& prefix)
 {
