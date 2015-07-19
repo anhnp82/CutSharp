@@ -149,11 +149,14 @@ void Scene::initGL()
     m_box = new GLRoundedBox(0.25f, 1.0f, 10);
 
     m_pVertexShader = new QGLShader(QGLShader::Vertex);
-    m_pVertexShader->compileSourceFile(QLatin1String(":/res/boxes/basic.vsh"));
+
+	QString sCurrentDir = QDir::currentPath();
+
+    m_pVertexShader->compileSourceFile(sCurrentDir + "/res/basic.vsh");
 
     QStringList list;
-    list << ":/res/boxes/cubemap_posx.jpg" << ":/res/boxes/cubemap_negx.jpg" << ":/res/boxes/cubemap_posy.jpg"
-         << ":/res/boxes/cubemap_negy.jpg" << ":/res/boxes/cubemap_posz.jpg" << ":/res/boxes/cubemap_negz.jpg";
+	list << sCurrentDir + "/res/cubemap_posx.jpg" << sCurrentDir + "/res/cubemap_negx.jpg" << sCurrentDir + "/res/cubemap_posy.jpg"
+		<< sCurrentDir + "/res/cubemap_negy.jpg" << sCurrentDir + "/res/cubemap_posz.jpg" << sCurrentDir + "/res/cubemap_negz.jpg";
 
     m_pEnvCubeTexture = new GLTextureCube(list, qMin(1024, m_maxTextureSize));
 
@@ -171,7 +174,7 @@ void Scene::initGL()
     // Load all .png files as textures
     m_currentTextureId = 0;
     filter = QStringList("*.png");
-    files = QDir(":/res/boxes/").entryInfoList(filter, QDir::Files | QDir::Readable);
+	files = QDir(sCurrentDir + "/res/").entryInfoList(filter, QDir::Files | QDir::Readable);
 
     foreach (QFileInfo file, files)
     {
@@ -189,7 +192,7 @@ void Scene::initGL()
     // Load all .fsh files as fragment shaders
     m_currentShaderId = 0;
     filter = QStringList("*.fsh");
-    files = QDir(":/res/boxes/").entryInfoList(filter, QDir::Files | QDir::Readable);
+	files = QDir(sCurrentDir + "/res/").entryInfoList(filter, QDir::Files | QDir::Readable);
 
     foreach (QFileInfo file, files)
     {
