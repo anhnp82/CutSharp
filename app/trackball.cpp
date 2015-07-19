@@ -121,7 +121,18 @@ void TrackBall::move(const QPointF& p, const QQuaternion &transformation, bool b
         {
             if (!bFromRelease)
             {
-                m_DragPos = QVector3D(p.x(), p.y(), 0.0f);
+                QVector3D currentPos = QVector3D(p.x(), p.y(), 0.0f);
+
+				QVector3D direction = currentPos - m_DragPos;
+
+				if (direction.length() > 0.5) // avoid teleporting
+				{
+					m_DragPos = m_DragPos + 0.1*direction;
+				}
+				else
+				{
+					m_DragPos = QVector3D(p.x(), p.y(), 0.0f);
+				}
             }
         }
         break;
