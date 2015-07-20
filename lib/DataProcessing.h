@@ -4,105 +4,40 @@
 // to do: attach move id for each vertex using NN search see also TestRenderder
 // for each vertex, query knn moves => load move list first
 
-static void ReadSTLBinary(misc::mwBinInputStream& l_strm, Mesh& mesh)
+#include <qvector3d.h>
+#include "Shape.h"
+#include "ShapeSphere.h"
+#include "BVH.h"
+#include "BVHSphere.h"
+
+using namespace std;
+
+class CDataProcessing
 {
-	try
+public:
+	// A structure for our triangle vertex type.
+	struct TriangleVertex
 	{
-		//skip header
-#if defined (_WIN32)
-		const unsigned __int64 header_length = 80;
-#elif defined(linux)
-		const uint64_t header_length = 80;
-#endif
+		QVector3D position;
+		QVector3D normal;
+		QVector3D nearestMoveId; // store the nearest id of a linear cut
+	};
 
-		char header[header_length];
-#if defined (_WIN32)
-		unsigned __int64 size;
-#elif defined(linux)
-		uint64_t size;
-#endif
+	typedef vector<TriangleVertex> VertexList;
 
-		size = header_length;
-		l_strm.Read((void*)header, size);
-		int nTotalTriangles;
+	CDataProcessing();
+	~CDataProcessing();
 
-		size = sizeof(nTotalTriangles);
-		l_strm.Read(&nTotalTriangles, size);
+private:
+	VertexList m_VertexList;
+};
 
-		if (!nTotalTriangles)
-		{
-			throw cadcam::mwSTLParserException(mwSTLParserException::INVALID_NUMBER_OF_TRIANGLES);
-		}
-
-		TriangleVector triangleVector;
-		triangleVector.Reserve(nTotalTriangles);
-		const size_t pointsBufferSize = 12;
-		float* points3dBuffer = new float[pointsBufferSize];
-		point3d normal;
-		point3d point1;
-		point3d point2;
-		point3d point3;
-		short dummyint = 0;
-		size = sizeof(dummyint);
-		for (int i = 0; i < nTotalTriangles; i++)
-		{
-			BufferedReadTriangle(l_strm, normal, point1, point2, point3, points3dBuffer);
-
-			l_strm.Read(&dummyint, size);
-
-			if (~(point1 - point2) < mathdef::MW_MATH_TOL &&
-				~(point3 - point2) < mathdef::MW_MATH_TOL)
-				continue;
-
-			triangleVector.AddTriangle(point1, point2, point3, normal);
-		}
-		delete[] points3dBuffer;
-		mesh.SetTriangles(triangleVector);
-	}
-	catch (misc::mwException& ex)
-	{
-		throw cadcam::mwSTLParserException(mwSTLParserException::INVALID_FILE_FORMAT, &ex);
-	}
-}
-
-//!BufferedReadTriangle
-/*!Reads a triangle from an input binary .stl file
-\param strm reference to the input stream
-\param normal reference for the normal
-\param point1 reference to the triangle's first 3DPoint
-\param point2 reference to the triangle's second 3DPoint
-\param point3 reference to the triangle's third 3DPoint
-\param buffer the buffer that will be used for file reading
-*/
-static bool BufferedReadTriangle(misc::mwBinInputStream& strm,
-	point3d& normal, point3d& point1, point3d& point2, point3d& point3, float* buffer)
+CDataProcessing::CDataProcessing()
 {
-	const size_t nrOfPointsToBeReadInOneShot = 12;
-#if defined (_WIN32)
-	unsigned __int64 size = sizeof(float)* nrOfPointsToBeReadInOneShot;
-#elif defined(linux)
-	uint64_t size = sizeof(float)* nrOfPointsToBeReadInOneShot;
-#endif
-	strm.Read(buffer, size);
-	ReadPointFromBuffer(normal, buffer, 0);
-	ReadPointFromBuffer(point1, buffer, 3);
-	ReadPointFromBuffer(point2, buffer, 6);
-	ReadPointFromBuffer(point3, buffer, 9);
-	return true;
 }
 
-//!ReadPointFromBuffer
-/*!Utility method, reads a point from a given buffer, using data starting at
-extractionStartPosition
-\param point reference to the input stream
-\param buffer the input buffer
-\param extractionStartPosition the position at which extraction will commence
-*/
-static bool ReadPointFromBuffer(
-	point3d& point, float* buffer, const size_t& extractionStartPosition)
+CDataProcessing::~CDataProcessing()
 {
-	point.x(buffer[extractionStartPosition]);
-	point.y(buffer[extractionStartPosition + 1]);
-	point.z(buffer[extractionStartPosition + 2]);
-	return true;
 }
+
+
