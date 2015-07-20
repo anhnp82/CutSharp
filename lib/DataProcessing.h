@@ -5,9 +5,7 @@
 // for each vertex, query knn moves => load move list first
 
 #include <qvector3d.h>
-#include "Shape.h"
 #include "ShapeSphere.h"
-#include "BVH.h"
 #include "BVHSphere.h"
 
 using namespace std;
@@ -29,6 +27,9 @@ public:
 	~CDataProcessing();
 
 private:
+
+	void ReadMotionList(const QString & qsFilePath);
+
 	VertexList m_VertexList;
 };
 
