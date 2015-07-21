@@ -1,8 +1,5 @@
-
 #ifndef __TPoint3d_hpp__
 #define __TPoint3d_hpp__
-
-#include "MathConstants.hpp"
 
 //#############################################################################
 
@@ -80,7 +77,6 @@
 		#ifdef  _WIN64
 		//VC8 bug, if inline the assignment operator sometimes works wrong
 		//because of a bug in the x64 VC8 optimizer
-		//you will se that some bins never end
 			const TPoint3d& operator=( const TPoint3d &tc );
 		#else
 			INLINE	const TPoint3d& operator=( const TPoint3d &tc )
@@ -143,7 +139,7 @@
 		/*!Sets new x-coordinate of the 3d point.
 			\param newx const x-coordinate of the 3d point
 		*/
-		INLINE void x( const T newx )
+		INLINE void x( const T & newx )
 		{
 			elems[0] = newx;
 		}
@@ -154,7 +150,7 @@
 		/*!Sets new y-coordinate of the 3d point.
 			\param newy const y-coordinate of the 3d point
 		*/
-		INLINE void y( const T newy )
+		INLINE void y( const T & newy )
 		{
 			elems[1] = newy;
 		}
@@ -165,7 +161,7 @@
 		/*!Sets new z-coordinate of the 3d point.
 			\param newz const z-coordinate of the 3d point
 		*/
-		INLINE void z( const T newz )
+		INLINE void z( const T & newz )
 		{
 			elems[2] = newz;
 		}
@@ -176,7 +172,7 @@
 		/*!Gets the x-coordinate of the 3d point as a reference.
 			\returns constant reference to the x-coordinate
 		*/
-		INLINE const T x() const
+		INLINE const T & x() const
 		{
 			return elems[0];
 		}
@@ -187,7 +183,7 @@
 		/*!Gets the y-coordinate of the 3d point as a reference.
 			\returns constant reference to the y-coordinate
 		*/
-		INLINE const T y() const
+		INLINE const T & y() const
 		{
 			return elems[1];
 		}
@@ -198,7 +194,7 @@
 		/*!Gets the z-coordinate of the 3d point as a reference.
 			\returns constant reference to the z-coordinate
 		*/
-		INLINE const T z() const
+		INLINE const T & z() const
 		{
 			return elems[2];
 		}
@@ -316,65 +312,10 @@
 		INLINE const TPoint3d<T>& Normalize()
 		{
 			if(*this == TPoint3d(0, 0, 0))
-				throw Exception(Exception::CANNOT_NORMALIZE_NULL_VEC);
+				throw Exception("Exception::CANNOT_NORMALIZE_NULL_VEC");
 			(*this) /= ~(*this);
 			return *this;
 		}
-
-//#############################################################################
-
-		//!Normalized function
-		/*!Return a normalized vector (3d point)
-		*/
-		INLINE const TPoint3d<T> Normalized() const
-		{
-			return TPoint3d(*this).Normalize();
-		}
-
-//#############################################################################
-
-		//!Orthogonal function
-		/*!Return any orthogonal vector (3d point)
-		*/
-		INLINE const TPoint3d<T> Orthogonal() const
-		{
-			TPoint3d<T> cur = Normalized();
-
-			TPoint3d<T> o = TPoint3d<T>( cur.y(), cur.z(), cur.x() ) % cur;
-
-			if( o == TPoint3d<T>(0, 0, 0) )
-				return ( TPoint3d<T>( (T)0.0, (T)1.0, (T)0.0 ) % cur ).Normalized();
-			else
-				return o.Normalized();
-		}
-
-//#############################################################################
-		//! Transform
-		/*
-			\param matrix const ref to a <3,3> rotation matrix
-			\param translation const ref to a translation
-		*/
-		void Transform3d( const Matrix< T, 3, 3> &matrix, const TPoint3d< T >& translation );
-
-		//! Transform
-		/*
-			\param matrix const ref to a <3,3> rotation matrix
-		*/
-		void Transform( const Matrix< T, 3, 3> &matrix3d );
-
-		//! Transform
-		/*
-			\param homomatrix const ref to a transformation matrix
-		*/
-		void Transform( const Matrix< T, 4, 4> &homomatrix );
-		
-		INLINE void HomothetyTransform( const TPoint3d<T> &homothety )
-		{
-			elems[0] *= homothety.x();
-			elems[1] *= homothety.y();
-			elems[2] *= homothety.z();
-		}
-//#############################################################################
 
 		//! Equality method
 		/*
@@ -392,35 +333,13 @@
 				return false;
 		}
 
-
-//#############################################################################
-		//! Convert to string
-		INLINE
-			misc::string ToString() const
-		{
-			misc::string res;
-			res += _T("(");
-			res += misc::from_value(x(), 5) + _T(", ") + misc::from_value(y(), 5) + _T(", ") + misc::from_value(z(), 5) ;
-			res += _T(") ");
-			return res;
-		}
-
 //#############################################################################
 
 	private:
 		T elems[3];
 	};
 
-	typedef TPoint3d<double> Point3d;
-	typedef TPoint3d<double> Vector3d;
-
-	//!- operator
-	/*!Subtract each 3d point component from another
-		\param first const reference of a 3d point
-		\param second const reference of a 3d point
-		\returns subtracted const 3d point
-	*/
-	template < class T > INLINE const TPoint3d<T> operator-(
+	template < class T > INLINE TPoint3d<T> operator-(
 		const TPoint3d<T> &p )
 	{
 		return TPoint3d<T>( -p.x(), -p.y(), -p.z() );
@@ -432,9 +351,9 @@
 	/*!Add each component of a 3d point to another
 		\param first const reference of a 3d point
 		\param second const reference of a 3d point
-		\returns added const 3d point
+		\returns added 3d point
 	*/
-	template < class T > INLINE const TPoint3d<T> operator+( 
+	template < class T > INLINE TPoint3d<T> operator+( 
 		const TPoint3d<T> &first, const TPoint3d<T> &second )
 	{
 		return TPoint3d<T>( first.x() + second.x(),
@@ -448,9 +367,9 @@
 	/*!Subtract each 3d point component from another
 		\param first const reference of a 3d point
 		\param second const reference of a 3d point
-		\returns subtracted const 3d point
+		\returns subtracted 3d point
 	*/
-	template < class T > INLINE const TPoint3d<T> operator-( 
+	template < class T > INLINE TPoint3d<T> operator-( 
 		const TPoint3d<T> &first, const TPoint3d<T> &second )
 	{
 		return TPoint3d<T>( first.x() - second.x(),
@@ -510,9 +429,9 @@
 	/*!Scalar product of to 3d points.
 		\param first const reference to a 3d point
 		\param second const reference to a 3d point
-		\returns const scalar	
+		\returns scalar	
 	*/
-	template < class T > INLINE const T operator*( 
+	template < class T > INLINE T operator*( 
 		const TPoint3d<T> &first, const TPoint3d<T> &second )
 	{
 		return first.x()*second.x() + first.y()*second.y() +
@@ -525,9 +444,9 @@
 	/*!Cross (vector) product of to 3d points
 		\param first const reference to a 3d point
 		\param second const reference to a 3d point
-		\returns const 3d point
+		\returns 3d point
 	*/
-	template < class T > INLINE const TPoint3d<T> operator%( 
+	template < class T > INLINE TPoint3d<T> operator%( 
 		const TPoint3d<T> &first, const TPoint3d<T>  &second )
 	{
 		return TPoint3d<T> ( first.y()*second.z() - first.z()*second.y(),
@@ -538,7 +457,5 @@
 
 
 //#############################################################################
-
-#define TVector3d TPoint3d
 
 #endif //__TPoint3d_hpp__
