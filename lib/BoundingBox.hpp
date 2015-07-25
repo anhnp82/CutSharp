@@ -16,11 +16,12 @@ public:
 	/*!
 		This constructor initialize corners at (-max_value)-(max_value)
 	*/
-	BoundingBox()
-		:UpperRightFarCorner(-std::numeric_limits<T>::max(),
-			-std::numeric_limits<T>::max(), -std::numeric_limits<T>::max() ), 
-		 BottomLeftNearCorner( std::numeric_limits<T>::max(),
-			std::numeric_limits<T>::max(), std::numeric_limits<T>::max() )
+	BoundingBox() : UpperRightFarCorner(-std::numeric_limits<T>::max(),
+										-std::numeric_limits<T>::max(), 
+										-std::numeric_limits<T>::max() ), 
+					BottomLeftNearCorner(std::numeric_limits<T>::max(),
+										 std::numeric_limits<T>::max(), 
+										 std::numeric_limits<T>::max() )
 	{
 	}
 
@@ -138,17 +139,17 @@ public:
 			*this = ta;
 			return;
 		}
-		UpperRightFarCorner.x(max(UpperRightFarCorner.x(),
+		UpperRightFarCorner.x(_max(UpperRightFarCorner.x(),
 			ta.UpperRightFarCorner.x()));
-		UpperRightFarCorner.y(max(UpperRightFarCorner.y(),
+		UpperRightFarCorner.y(_max(UpperRightFarCorner.y(),
 			ta.UpperRightFarCorner.y()));
-		UpperRightFarCorner.z(max(UpperRightFarCorner.z(),
+		UpperRightFarCorner.z(_max(UpperRightFarCorner.z(),
 			ta.UpperRightFarCorner.z()));
-		BottomLeftNearCorner.x(min(BottomLeftNearCorner.x(),
+		BottomLeftNearCorner.x(_min(BottomLeftNearCorner.x(),
 			ta.BottomLeftNearCorner.x()));
-		BottomLeftNearCorner.y(min(BottomLeftNearCorner.y(),
+		BottomLeftNearCorner.y(_min(BottomLeftNearCorner.y(),
 			ta.BottomLeftNearCorner.y()));
-		BottomLeftNearCorner.z(min(BottomLeftNearCorner.z(),
+		BottomLeftNearCorner.z(_min(BottomLeftNearCorner.z(),
 			ta.BottomLeftNearCorner.z()));
 	}
 
@@ -171,17 +172,17 @@ public:
 			return;
 		}
 
-		UpperRightFarCorner.x(min(UpperRightFarCorner.x(),
+		UpperRightFarCorner.x(_min(UpperRightFarCorner.x(),
 			ta.UpperRightFarCorner.x()));
-		UpperRightFarCorner.y(min(UpperRightFarCorner.y(),
+		UpperRightFarCorner.y(_min(UpperRightFarCorner.y(),
 			ta.UpperRightFarCorner.y()));
-		UpperRightFarCorner.z(min(UpperRightFarCorner.z(),
+		UpperRightFarCorner.z(_min(UpperRightFarCorner.z(),
 			ta.UpperRightFarCorner.z()));
-		BottomLeftNearCorner.x(max(BottomLeftNearCorner.x(),
+		BottomLeftNearCorner.x(_max(BottomLeftNearCorner.x(),
 			ta.BottomLeftNearCorner.x()));
-		BottomLeftNearCorner.y(max(BottomLeftNearCorner.y(),
+		BottomLeftNearCorner.y(_max(BottomLeftNearCorner.y(),
 			ta.BottomLeftNearCorner.y()));
-		BottomLeftNearCorner.z(max(BottomLeftNearCorner.z(),
+		BottomLeftNearCorner.z(_max(BottomLeftNearCorner.z(),
 			ta.BottomLeftNearCorner.z()));
 	}
 
@@ -363,12 +364,12 @@ template < class T > const BoundingBox< T > operator+(
 	const BoundingBox< T > &first, const BoundingBox< T > &second )
 {
 	typename BoundingBox<T>::bboxCorner corner1, corner2;
-	corner2.x(max(first.GetUpperRightFarCorner().x(), second.GetUpperRightFarCorner().x()));
-	corner2.y(max(first.GetUpperRightFarCorner().y(), second.GetUpperRightFarCorner().y()));
-	corner2.z(max(first.GetUpperRightFarCorner().z(), second.GetUpperRightFarCorner().z()));
-	corner1.x(min(first.GetBottomLeftNearCorner().x(), second.GetBottomLeftNearCorner().x()));
-	corner1.y(min(first.GetBottomLeftNearCorner().y(), second.GetBottomLeftNearCorner().y()));
-	corner1.z(min(first.GetBottomLeftNearCorner().z(), second.GetBottomLeftNearCorner().z()));
+	corner2.x(_max(first.GetUpperRightFarCorner().x(), second.GetUpperRightFarCorner().x()));
+	corner2.y(_max(first.GetUpperRightFarCorner().y(), second.GetUpperRightFarCorner().y()));
+	corner2.z(_max(first.GetUpperRightFarCorner().z(), second.GetUpperRightFarCorner().z()));
+	corner1.x(_min(first.GetBottomLeftNearCorner().x(), second.GetBottomLeftNearCorner().x()));
+	corner1.y(_min(first.GetBottomLeftNearCorner().y(), second.GetBottomLeftNearCorner().y()));
+	corner1.z(_min(first.GetBottomLeftNearCorner().z(), second.GetBottomLeftNearCorner().z()));
 	return BoundingBox<T>( corner1, corner2 );
 }
 

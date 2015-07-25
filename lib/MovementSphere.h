@@ -4,7 +4,7 @@
 #include "CompareLineSegmentWithBox.h"
 
 #pragma warning (disable: 4201)
-#include "glm-0.9.3.4/glm/glm.hpp"
+//#include "glm-0.9.3.4/glm/glm.hpp"
 #pragma warning (default: 4201)
 
 #include <conio.h>

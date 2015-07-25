@@ -4,8 +4,8 @@
 #include <exception> 
 #include <limits>
 
-#define min(a, b) ((a) < (b) ? (a) : (b))
-#define max(a, b) ((a) > (b) ? (a) : (b)) 
+#define _min(a, b) ((a) < (b) ? (a) : (b))
+#define _max(a, b) ((a) > (b) ? (a) : (b)) 
 
 
 //#############################################################################
@@ -81,23 +81,23 @@
 		  \param tc tool to copy the information from
 		  \returns current 3d point with copied information
 		*/
-		#ifdef  _WIN64
+#ifdef  _WIN64
 		//VC8 bug, if inline the assignment operator sometimes works wrong
 		//because of a bug in the x64 VC8 optimizer
-			const TPoint3d& operator=( const TPoint3d &tc );
-		#else
-			INLINE	const TPoint3d& operator=( const TPoint3d &tc )
+		const TPoint3d& operator=( const TPoint3d &tc )
+#else
+		INLINE	const TPoint3d& operator=( const TPoint3d &tc )
+#endif
+		{
+			if( this != &tc )
 			{
-				if( this != &tc )
-				{
-					elems[0] = tc.elems[0];
-					elems[1] = tc.elems[1];
-					elems[2] = tc.elems[2];
-				}
-
-				return *this;
+				elems[0] = tc.elems[0];
+				elems[1] = tc.elems[1];
+				elems[2] = tc.elems[2];
 			}
-		#endif
+
+			return *this;
+		}
 
 //#############################################################################
 

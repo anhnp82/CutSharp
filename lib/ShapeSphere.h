@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MachSimVerifier.hpp"
-#include <GL/glew.h>
+//#include <GL/glew.h>
+#include "app/glextensions.h"
 #include "boost/unordered_map.hpp"
 #include <queue>
 #include "BoundingSphere.h"

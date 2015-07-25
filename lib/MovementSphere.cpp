@@ -1,5 +1,5 @@
 #include "MovementSphere.h"
-#include <gl/glew.h>
+//#include <gl/glew.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
 

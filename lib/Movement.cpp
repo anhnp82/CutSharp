@@ -1,5 +1,5 @@
 #include "Movement.h"
-#include <gl/glew.h>
+//#include <gl/glew.h>
 #include <gl/gl.h>
 #include <gl/glu.h>
 #include <conio.h>
@@ -20,7 +20,8 @@ Movement::Movement(Shape::Vector3 _begin, Shape::Vector3 _end,
 				   Vector3 begin_axis, Vector3 end_axis, float radius, size_t moveId)
 {
 	box = BBox( _begin, _end );
-	box.Inflate(radius);
+	//box.Inflate(radius);
+	box.Inflate(radius, radius, radius);
 	begin = _begin;
 	end = _end;
 	originalId = moveId;
@@ -88,7 +89,7 @@ void Movement::writeToTexture(GLfloat *bvh_tex, const int & escIdxFromParentToRi
 	bvh_tex[m_id*8+6] = moveVec.z();
 	bvh_tex[m_id*8+7] = length;
 
-	std::cout << escIdxFromParentToRightChild;
+	//std::cout << escIdxFromParentToRightChild;
 
 	//end visit. Since this is a leaf node, nothing left to do.
 }
