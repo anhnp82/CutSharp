@@ -1,6 +1,7 @@
 #ifndef __BoundingBox_hpp__
 #define __BoundingBox_hpp__
 
+#include "TPoint3d.hpp"
 
 //! implements a 3d bounding box
 /*! The class members are 2 bboxCorners
@@ -16,10 +17,10 @@ public:
 		This constructor initialize corners at (-max_value)-(max_value)
 	*/
 	BoundingBox()
-	:UpperRightFarCorner( -mathdef::_maxvalue(T()),
-		-mathdef::_maxvalue(T()), -mathdef::_maxvalue(T()) ), 
-	 BottomLeftNearCorner( mathdef::_maxvalue(T()),
-		mathdef::_maxvalue(T()), mathdef::_maxvalue(T()) )
+		:UpperRightFarCorner(-std::numeric_limits<T>::max(),
+			-std::numeric_limits<T>::max(), -std::numeric_limits<T>::max() ), 
+		 BottomLeftNearCorner( std::numeric_limits<T>::max(),
+			std::numeric_limits<T>::max(), std::numeric_limits<T>::max() )
 	{
 	}
 
@@ -33,7 +34,6 @@ public:
 	{
 		SetCorners(corner1, corner2);
 	}
-
 
 	//! GetBottomLeftNearCorner
 	/*!
@@ -138,17 +138,17 @@ public:
 			*this = ta;
 			return;
 		}
-		UpperRightFarCorner.x(mathdef::_max(UpperRightFarCorner.x(),
+		UpperRightFarCorner.x(max(UpperRightFarCorner.x(),
 			ta.UpperRightFarCorner.x()));
-		UpperRightFarCorner.y(mathdef::_max(UpperRightFarCorner.y(),
+		UpperRightFarCorner.y(max(UpperRightFarCorner.y(),
 			ta.UpperRightFarCorner.y()));
-		UpperRightFarCorner.z(mathdef::_max(UpperRightFarCorner.z(),
+		UpperRightFarCorner.z(max(UpperRightFarCorner.z(),
 			ta.UpperRightFarCorner.z()));
-		BottomLeftNearCorner.x(mathdef::_min(BottomLeftNearCorner.x(),
+		BottomLeftNearCorner.x(min(BottomLeftNearCorner.x(),
 			ta.BottomLeftNearCorner.x()));
-		BottomLeftNearCorner.y(mathdef::_min(BottomLeftNearCorner.y(),
+		BottomLeftNearCorner.y(min(BottomLeftNearCorner.y(),
 			ta.BottomLeftNearCorner.y()));
-		BottomLeftNearCorner.z(mathdef::_min(BottomLeftNearCorner.z(),
+		BottomLeftNearCorner.z(min(BottomLeftNearCorner.z(),
 			ta.BottomLeftNearCorner.z()));
 	}
 
@@ -171,17 +171,17 @@ public:
 			return;
 		}
 
-		UpperRightFarCorner.x(_min(UpperRightFarCorner.x(),
+		UpperRightFarCorner.x(min(UpperRightFarCorner.x(),
 			ta.UpperRightFarCorner.x()));
-		UpperRightFarCorner.y(_min(UpperRightFarCorner.y(),
+		UpperRightFarCorner.y(min(UpperRightFarCorner.y(),
 			ta.UpperRightFarCorner.y()));
-		UpperRightFarCorner.z(_min(UpperRightFarCorner.z(),
+		UpperRightFarCorner.z(min(UpperRightFarCorner.z(),
 			ta.UpperRightFarCorner.z()));
-		BottomLeftNearCorner.x(_max(BottomLeftNearCorner.x(),
+		BottomLeftNearCorner.x(max(BottomLeftNearCorner.x(),
 			ta.BottomLeftNearCorner.x()));
-		BottomLeftNearCorner.y(_max(BottomLeftNearCorner.y(),
+		BottomLeftNearCorner.y(max(BottomLeftNearCorner.y(),
 			ta.BottomLeftNearCorner.y()));
-		BottomLeftNearCorner.z(_max(BottomLeftNearCorner.z(),
+		BottomLeftNearCorner.z(max(BottomLeftNearCorner.z(),
 			ta.BottomLeftNearCorner.z()));
 	}
 
@@ -247,24 +247,24 @@ public:
 
 	bool IsInitialized() const
 	{
-		return !( UpperRightFarCorner.x() == -mathdef::_maxvalue(T()) &&
-				UpperRightFarCorner.y() == -mathdef::_maxvalue(T()) &&
-				UpperRightFarCorner.z() == -mathdef::_maxvalue(T()) &&
-				BottomLeftNearCorner.x() == mathdef::_maxvalue(T()) &&
-				BottomLeftNearCorner.y() == mathdef::_maxvalue(T()) &&
-				BottomLeftNearCorner.z() == mathdef::_maxvalue(T()) );
+		return !( UpperRightFarCorner.x() == -std::numeric_limits<T>::max() &&
+				UpperRightFarCorner.y() == -std::numeric_limits<T>::max() &&
+				UpperRightFarCorner.z() == -std::numeric_limits<T>::max() &&
+				BottomLeftNearCorner.x() == std::numeric_limits<T>::max() &&
+				BottomLeftNearCorner.y() == std::numeric_limits<T>::max() &&
+				BottomLeftNearCorner.z() == std::numeric_limits<T>::max() );
 	}
 
 	//!  Uninitialize
 	void Uninitialize()
 	{
-		UpperRightFarCorner = bboxCorner( -mathdef::_maxvalue(T()),
-										  -mathdef::_maxvalue(T()), 
-										  -mathdef::_maxvalue(T()) );
+		UpperRightFarCorner = bboxCorner( -std::numeric_limits<T>::max(),
+										  -std::numeric_limits<T>::max(), 
+										  -std::numeric_limits<T>::max() );
 
-		BottomLeftNearCorner = bboxCorner( mathdef::_maxvalue(T()),
-										   mathdef::_maxvalue(T()), 
-										   mathdef::_maxvalue(T()) );
+		BottomLeftNearCorner = bboxCorner( std::numeric_limits<T>::max(),
+										   std::numeric_limits<T>::max(), 
+										   std::numeric_limits<T>::max() );
 	}
 
 	//! Check if point is in bounding box
@@ -299,6 +299,7 @@ public:
 			p.y() >= GetBottomLeftNearCorner().y() - offset &&
 			p.z() >= GetBottomLeftNearCorner().z() - offset;
 	}
+
 	inline bool IsOverlapAppPlane(const BoundingBox< T > &src) const
 	{
 		if (UpperRightFarCorner.x() < src.BottomLeftNearCorner.x() ||
@@ -308,6 +309,7 @@ public:
 				return false;
 		return true;
 	}
+
 	//! Inflate bounding box
 	/*! 
 		\param const T dx delta to add to both edges in x direction
@@ -361,14 +363,13 @@ template < class T > const BoundingBox< T > operator+(
 	const BoundingBox< T > &first, const BoundingBox< T > &second )
 {
 	typename BoundingBox<T>::bboxCorner corner1, corner2;
-	corner2.x(mathdef::_max(first.GetUpperRightFarCorner().x(), second.GetUpperRightFarCorner().x()));
-	corner2.y(mathdef::_max(first.GetUpperRightFarCorner().y(), second.GetUpperRightFarCorner().y()));
-	corner2.z(mathdef::_max(first.GetUpperRightFarCorner().z(), second.GetUpperRightFarCorner().z()));
-	corner1.x(mathdef::_min(first.GetBottomLeftNearCorner().x(), second.GetBottomLeftNearCorner().x()));
-	corner1.y(mathdef::_min(first.GetBottomLeftNearCorner().y(), second.GetBottomLeftNearCorner().y()));
-	corner1.z(mathdef::_min(first.GetBottomLeftNearCorner().z(), second.GetBottomLeftNearCorner().z()));
+	corner2.x(max(first.GetUpperRightFarCorner().x(), second.GetUpperRightFarCorner().x()));
+	corner2.y(max(first.GetUpperRightFarCorner().y(), second.GetUpperRightFarCorner().y()));
+	corner2.z(max(first.GetUpperRightFarCorner().z(), second.GetUpperRightFarCorner().z()));
+	corner1.x(min(first.GetBottomLeftNearCorner().x(), second.GetBottomLeftNearCorner().x()));
+	corner1.y(min(first.GetBottomLeftNearCorner().y(), second.GetBottomLeftNearCorner().y()));
+	corner1.z(min(first.GetBottomLeftNearCorner().z(), second.GetBottomLeftNearCorner().z()));
 	return BoundingBox<T>( corner1, corner2 );
 }
-
 
 #endif //__BoundingBox_hpp__

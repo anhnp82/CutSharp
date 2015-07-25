@@ -1,6 +1,13 @@
 #ifndef __TPoint3d_hpp__
 #define __TPoint3d_hpp__
 
+#include <exception> 
+#include <limits>
+
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b)) 
+
+
 //#############################################################################
 
 #if defined (_WIN32)
@@ -12,7 +19,7 @@
 	//!This struct represents a 3d point.
 	/*!The 3d point is an array with 3 dimension components (x,y,z).
 	*/
-	template< class T > struct _5AXUTIL_API TPoint3d
+	template< class T > struct TPoint3d
 	{
 		// DEFAULT PUBLIC NON-VIRTUAL DESTRUCTOR IS USED IN THIS CLASS
 	public:
@@ -312,7 +319,7 @@
 		INLINE const TPoint3d<T>& Normalize()
 		{
 			if(*this == TPoint3d(0, 0, 0))
-				throw Exception("Exception::CANNOT_NORMALIZE_NULL_VEC");
+				throw std::exception("Exception::CANNOT_NORMALIZE_NULL_VEC");
 			(*this) /= ~(*this);
 			return *this;
 		}
@@ -322,7 +329,7 @@
 			\param toCompare const reference to a 3d point
 			\returns bool if this vector si equal with toComapre vector
 		*/
-		INLINE bool is_eq(const TPoint3d& toComapre, const double tolerance = mathdef::_MATH_TOL_SQR) const
+		INLINE bool is_eq(const TPoint3d& toComapre, const T & tolerance = std::numeric_limits<T>::epsilon()) const
 		{
 			const TPoint3d diff(toComapre - *this);
 			const T diffSquare = diff * diff;

@@ -1,4 +1,4 @@
-
+#include "TPoint3d.hpp"
 
 class BoundingSphere
 {

@@ -1,13 +1,12 @@
 #pragma once
 
-#include "MachSimVerifier.hpp"
-#include <GL/glew.h>
+#include "BoundingBox.hpp"
+//#include <GL/glew.h>
+#include "app/glextensions.h"
 #include <map>
 //#include <tr1/unordered_map>
 #include "boost/unordered_map.hpp"
 #include <queue>
-
-//#define MAX_FLOAT = 3.40282e+38
 
 using namespace std;
 //using namespace std::tr1;
@@ -26,7 +25,7 @@ public:
 		float ranking;
 	};
 
-	typedef 3dBoundingBox<float> BBox;
+	typedef BoundingBox<float> BBox;
 	typedef TPoint3d<float> Vector3;
 	typedef boost::unordered_map< size_t, std::vector<NeighborItem> > KnnMapType;
 	//typedef map< size_t, std::vector<size_t> > KnnMapType;

@@ -68,7 +68,7 @@ private:
 	int axis;
 public:
 
-	typedef 3dBoundingBox<float> BBox;
+	typedef BoundingBox<float> BBox;
 	typedef TPoint3d<float> Vector3;
 
 	CmpBox(int _axis) {axis = _axis;}
