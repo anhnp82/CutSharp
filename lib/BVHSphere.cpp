@@ -1,4 +1,6 @@
 #include "BVHSphere.h"
+#include <limits>
+
 
 
 BVHSphere::BVHSphere(void)
@@ -112,17 +114,79 @@ void BVHSphere::draw()
 
 
 
+void BVHSphere::allNNExact(std::vector<ShapeSphere*> &neighborList, size_t numberOfNeighbors, ShapeSphere *startNode)
+{
+	Vector3 point(0);
+	ComparePointWithSphere pointSphereComparer(point);
+	CompareLineWithPoint pointLineComparer(point);
+
+	//the closest one is at the top
+	CheckListType checkList(pointSphereComparer);
+	float nodePriority = FLT_MAX;
+	//the furthest one is at the top
+	NeighborListType neighbors(pointLineComparer);
+
+	float smallestDistanceFoundSoFar = FLT_MAX;
+	ShapeSphere* currentNode = startNode;
+
+	do
+	{
+		currentNode->bvh_knn(neighbors, checkList, numberOfNeighbors, pointSphereComparer, pointLineComparer, 0); // to do
+
+		currentNode = checkList.top();
+		nodePriority = currentNode->getRanking();
+
+		//_cprintf("check list priority %f \n", nodePriority);
+
+		checkList.pop();
+
+		if (neighbors.size() == numberOfNeighbors)
+		{
+			smallestDistanceFoundSoFar = neighbors.top()->getRanking();
+		}
+
+	} while (nodePriority <= smallestDistanceFoundSoFar && !checkList.empty());
+
+	//copy the result, the furthest one is at the beginning
+	size_t actualSize = neighbors.size();//less than or equal to numberOfNeighbors
+	neighborList.resize(actualSize);
+	for (size_t i = 0; i < actualSize; ++i)
+	{
+		//neighborList.push_back(neighbors.top());
+		neighborList[actualSize - i - 1] = neighbors.top();
+		neighbors.pop();
+	}
+}
+
+
+
 void BVHSphere::buildKnnExactMap(KnnMapType & knnMap, const size_t & k, ShapeSphere *startNode)
 {
-	left->buildKnnExactMap(knnMap, k, startNode);
-	right->buildKnnExactMap(knnMap, k, startNode);
+	std::vector<ShapeSphere*> neighbors;
+
+	allNNExact(neighbors, k, startNode);
+
+	std::vector<NeighborItem> knn(neighbors.size());
+
+	//_cprintf("neighbors of the move id %d is \n", m_OriginalId);
+	for (size_t i = 0; i < neighbors.size(); ++i)
+	{
+		MovementSphere * move = static_cast<MovementSphere *>(neighbors[i]);
+		//_cprintf("%d ", move->getMoveId());
+		NeighborItem item;
+		item.id = move->getMoveId();
+		item.ranking = move->getRanking();
+		knn[i] = item;
+	}
+	//_cprintf("\n");
+	knnMap[0] = knn; // to do
 }
 
 
 
 void BVHSphere::bvh_knn(NeighborListType &neighborList, CheckListType & checkList, 
-			 const size_t & numberOfNeighbors, CompareLineSegmentWithSphere & lineBoxComparer, 
-			 CompareLineSegment & lineLineComparer, const size_t & queryingMoveId)
+						const size_t & numberOfNeighbors, ComparePointWithSphere & pointSphereComparer,
+						CompareLineWithPoint & pointLineComparer, const size_t & queryingMoveId)
 {
 
 	///*
@@ -130,8 +194,8 @@ void BVHSphere::bvh_knn(NeighborListType &neighborList, CheckListType & checkLis
 	BoundingSphere sphere1 = left->getBoundingSphere();
 	BoundingSphere sphere2 = right->getBoundingSphere();
 
-	float dist1 = lineBoxComparer.getDistance(sphere1);
-	float dist2 = lineBoxComparer.getDistance(sphere2);
+	float dist1 = pointSphereComparer.getDistance(sphere1);
+	float dist2 = pointSphereComparer.getDistance(sphere2);
 
 	left->setRanking(dist1);
 	right->setRanking(dist2);
@@ -140,7 +204,7 @@ void BVHSphere::bvh_knn(NeighborListType &neighborList, CheckListType & checkLis
 	checkList.push(right);
 	
 	//dummy by pass warning
-	lineLineComparer.idle();
+	pointLineComparer.idle();
 	size_t dummy = numberOfNeighbors;
 	dummy = neighborList.size();
 	dummy = queryingMoveId;
@@ -148,7 +212,4 @@ void BVHSphere::bvh_knn(NeighborListType &neighborList, CheckListType & checkLis
 	//*/
 
 }
-
-
-
 

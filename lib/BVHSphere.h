@@ -30,13 +30,15 @@ public:
 
 	void buildKnnExactMap(KnnMapType & knnMap, const size_t & k, ShapeSphere *startNode);
 
+	void allNNExact(std::vector<ShapeSphere*> &neighborList, size_t numberOfNeighbors, ShapeSphere *startNode);
+
 	static const int BVH_TEX_SIZE = 800;
 
 private:
 
 	void bvh_knn(NeighborListType &neighborList, CheckListType & checkList, 
-				const size_t & numberOfNeighbors, CompareLineSegmentWithSphere & lineBoxComparer, 
-				CompareLineSegment & lineLineComparer, const size_t & queryingMoveId);
+				const size_t & numberOfNeighbors, ComparePointWithSphere & pointSphereComparer,
+				CompareLineWithPoint & pointLineComparer, const size_t & queryingMoveId);
 
 	ShapeSphere* left; 
 	ShapeSphere* right;
@@ -51,19 +53,11 @@ private:
 	int axis;
 public:
 
-	typedef TPoint3d<float> Vector3;
-
-	CmpSphere(int _axis) {axis = _axis;}
+	CmpSphere(const int & iAxis) {axis = iAxis;}
 
 	bool operator()(ShapeSphere* bvh1, ShapeSphere* bvh2) const
 	{
-		BoundingSphere _bbox1 = bvh1->getBoundingSphere();
-		BoundingSphere _bbox2 = bvh2->getBoundingSphere();
-
-		Vector3 c1 = _bbox1.getCenter();
-		Vector3 c2 = _bbox2.getCenter();
-
-		return c1[axis] < c2[axis];
+		return bvh1->getBoundingSphere().getCenter()[axis] < bvh2->getBoundingSphere().getCenter()[axis];
 	}
 
 };

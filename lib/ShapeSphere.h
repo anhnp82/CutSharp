@@ -11,6 +11,8 @@
 using namespace std;
 class CompareLineSegment;
 class CompareLineSegmentWithSphere;
+class CompareLineWithPoint;
+class ComparePointWithSphere;
 
 #include <conio.h>
 
@@ -31,10 +33,8 @@ public:
 
 	typedef TPoint3d<float> Vector3;
 	typedef boost::unordered_map< size_t, std::vector<NeighborItem> > KnnMapType;
-	typedef priority_queue<ShapeSphere*, std::vector<ShapeSphere*>, CompareLineSegment> NeighborListType;
-	typedef priority_queue<ShapeSphere*, std::vector<ShapeSphere*>, CompareLineSegmentWithSphere> CheckListType;
-
-
+	typedef priority_queue<ShapeSphere*, std::vector<ShapeSphere*>, CompareLineWithPoint> NeighborListType;
+	typedef priority_queue<ShapeSphere*, std::vector<ShapeSphere*>, ComparePointWithSphere> CheckListType;
 
 	virtual void draw() = 0;
 
@@ -55,13 +55,9 @@ public:
 		this->ranking = aRank;
 	}
 
-	
-
 	virtual void bvh_knn(NeighborListType &neighborList, CheckListType & checkList, 
-						const size_t & numberOfNeighbors, CompareLineSegmentWithSphere & lineBoxComparer, 
-						CompareLineSegment & lineLineComparer, const size_t & queryingMoveId) = 0;
-
-
+						const size_t & numberOfNeighbors, ComparePointWithSphere & pointSphereComparer, 
+						CompareLineWithPoint & pointLineComparer, const size_t & queryingMoveId) = 0;
 
 	virtual void buildKnnExactMap(KnnMapType & knnMap, const size_t & k, ShapeSphere *startNode) = 0;
 

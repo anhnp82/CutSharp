@@ -9,6 +9,8 @@
 
 #include <conio.h>
 
+
+
 class MovementSphere :
 	public ShapeSphere
 {
@@ -18,19 +20,15 @@ public:
 
 	MovementSphere(Vector3 _begin, Vector3 _end, Vector3 _beginAxis, Vector3 _endAxis, float radius, size_t moveId);
 
-
-
 	void draw();
 	void freeNode();
 
-
-
-	Vector3 getBegin()
+	const Vector3 & getBegin()
 	{
 		return begin;
 	}
 
-	Vector3 getEnd()
+	const Vector3 & getEnd()
 	{
 		return end;
 	}
@@ -39,12 +37,6 @@ public:
 	{
 		return m_OriginalId;
 	}
-
-
-	void buildKnnExactMap(KnnMapType & knnMap, const size_t & k, ShapeSphere *startNode);
-
-	void allNNExact(std::vector<ShapeSphere*> &neighborList, size_t numberOfNeighbors, ShapeSphere *startNode);
-	
 
 private:
 
@@ -56,24 +48,67 @@ private:
 	size_t m_OriginalId;
 
 
-
 	void bvh_knn(NeighborListType &neighborList, CheckListType & checkList, 
-				const size_t & numberOfNeighbors, CompareLineSegmentWithSphere & lineBoxComparer, 
-				CompareLineSegment & lineLineComparer, const size_t & queryingMoveId);
+				const size_t & numberOfNeighbors, ComparePointWithSphere & pointSphereComparer,
+				CompareLineWithPoint & pointLineComparer, const size_t & queryingMoveId);
+};
 
 
+
+class CompareLineWithPoint
+{
+
+	typedef TPoint3d<float> Vector3;
+
+private:
+
+	Vector3 m_Point;
+
+public:
+
+	CompareLineWithPoint(const Vector3 & point)
+	{
+		m_Point = point;
+	}
+
+	void idle(){}
+
+	float getDistance(MovementSphere * move)
+	{
+		Vector3 direction = move->getEnd() - move->getBegin();
+
+		float length = ~direction;
+		direction /= length;
+
+		Vector3 beginToPoint = m_Point - move->getBegin();
+		float projection = beginToPoint*direction;
+
+		if (projection <= 0)
+		{
+			return ~(m_Point - move->getBegin());
+		}
+		if (projection >= length)
+		{
+			return ~(m_Point - move->getEnd());
+		}
+
+		Vector3 projectedPoint = (move->getBegin() + projection*direction);
+		return ~(m_Point - projectedPoint);
+
+	}
+
+
+	bool operator()(ShapeSphere* _move1, ShapeSphere* _move2) const
+	{
+		return _move1->getRanking() > _move2->getRanking();
+	}
 
 };
 
 
 
-
-
-
-
 class CompareLineSegment
 {
-
 	typedef TPoint3d<float> Vector3;
 
 private:
@@ -88,9 +123,7 @@ public:
 		m_currentSegment = currentSegment;
 	}
 
-
 	void idle(){}
-
 
 	float getDistance(MovementSphere * _aMove)
 	{
@@ -99,7 +132,6 @@ public:
 		seg.P1 = _aMove->getEnd();
 		return m_CompareUtils.dist3D_Segment_to_Segment(seg, m_currentSegment);
 	}
-
 
 	bool operator()(ShapeSphere* _move1, ShapeSphere* _move2) const
 	{

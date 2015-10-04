@@ -73,3 +73,41 @@ public:
 	}
 
 };
+
+
+
+class ComparePointWithSphere
+{
+
+	typedef TPoint3d<float> Vector3;
+
+private:
+
+	Vector3 m_point;
+
+public:
+
+	ComparePointWithSphere(const Vector3 & aPoint)
+	{
+		m_point = aPoint;
+	}
+
+	void idle(){}
+
+	float getDistance(const BoundingSphere & sphere)
+	{
+		if (sphere.Contains(m_point)) //check inside
+		{
+			//score = -100;
+			return -100;
+		}
+
+		return ~(m_point - sphere.getCenter());
+	}
+
+	bool operator()(ShapeSphere* _move1, ShapeSphere* _move2) const
+	{
+		return _move1->getRanking() > _move2->getRanking();
+	}
+
+};
